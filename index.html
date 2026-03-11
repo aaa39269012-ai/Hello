@@ -720,6 +720,692 @@
     </script>
 </body>
 </html>
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        #header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: #111;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        #logo {
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            background: #444;
+            border-radius: 50%;
+        }
+
+        #stories {
+            padding: 70px 15px 20px;
+            height: calc(100vh - 50px);
+            overflow-y: auto;
+        }
+
+        .category-section {
+            margin-bottom: 25px;
+        }
+
+        .category-title {
+            font-size: 17px;
+            font-weight: bold;
+            margin: 15px 0 8px;
+            padding-left: 8px;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .stories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+        }
+
+        .story-poster {
+            width: 100%;
+            aspect-ratio: 3/4;
+            border-radius: 8px;
+            position: relative;
+            background: #222;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .story-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .story-poster .fallback {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), #222;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            text-align: center;
+            padding: 8px;
+        }
+
+        .story-name {
+            position: absolute;
+            bottom: 6px;
+            left: 6px;
+            background: rgba(0,0,0,0.7);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        #player {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            display: none;
+            z-index: 2000;
+        }
+
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        #episodeList {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 180px;
+            background: #1a1a1a;
+            height: 60%;
+            overflow-y: auto;
+            display: none;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .episode-item {
+            padding: 8px;
+            cursor: pointer;
+            border-bottom: 1px solid #333;
+            font-size: 13px;
+        }
+
+        #toggleEpisodes, #backHome {
+            position: absolute;
+            top: 15px;
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            z-index: 10;
+            border-radius: 4px;
+        }
+
+        #toggleEpisodes { right: 15px; }
+        #backHome { left: 15px; }
+
+        #admin {
+            position: fixed;
+            inset: 0;
+            background: #111;
+            display: none;
+            z-index: 1500;
+            padding: 12px;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        #admin h2 {
+            margin: 8px 0 12px;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        #storyForm {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        #storyForm input,
+        #storyForm button {
+            padding: 9px 12px;
+            font-size: 14px;
+            border: none;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        #storyForm input {
+            background: #222;
+            color: #fff;
+        }
+
+        #storyForm button {
+            background: #444;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        #storyForm button[type="submit"] {
+            background: #0066cc;
+            font-weight: bold;
+        }
+
+        .episode-fields {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+            background: #1a1a1a;
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        .episode-fields input {
+            flex: 1;
+            min-width: 70px;
+        }
+
+        .episode-fields button {
+            background: #cc0000;
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+
+        #addEpisodeBtn {
+            background: #28a745;
+            padding: 9px;
+            font-size: 14px;
+        }
+
+        .story-list {
+            margin-top: 12px;
+        }
+
+        .story-item {
+            background: #222;
+            padding: 10px 12px;
+            margin: 6px 0;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .story-item strong {
+            font-size: 15px;
+            display: block;
+        }
+
+        .story-item span {
+            color: #aaa;
+            font-size: 12px;
+        }
+
+        .story-item button {
+            margin-top: 6px;
+            margin-right: 6px;
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .story-item button:first-of-type {
+            background: #007bff;
+        }
+
+        .story-item button:last-of-type {
+            background: #dc3545;
+        }
+
+        #backToAppBtn {
+            margin-top: 15px;
+            width: 100%;
+            padding: 10px;
+            background: #6c757d;
+            font-size: 15px;
+        }
+
+        #passModal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+            z-index: 1600;
+            text-align: center;
+        }
+
+        #passModal input, #passModal button {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        /* Ad Overlay Styling */
+        #adPlaceholder {
+            position: absolute;
+            inset: 0;
+            background: #000;
+            display: none;
+            z-index: 2500;
+            text-align: center;
+        }
+
+        #adIframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        #closeAd {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background: rgba(255, 0, 0, 0.8);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            z-index: 2600;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 3px solid #333;
+            border-top: 3px solid #fff;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="header">
+        <div id="logo"></div>
+    </div>
+
+    <div id="stories"></div>
+
+    <div id="player">
+        <video id="video" controls></video>
+        <div id="episodeList"></div>
+        <button id="toggleEpisodes">📺 Episodes</button>
+        <button id="backHome">← Back</button>
+        
+        <div id="adPlaceholder">
+            <button id="closeAd">Skip Ad</button>
+            <iframe id="adIframe" src=""></iframe>
+        </div>
+    </div>
+
+    <div id="admin">
+        <h2>Admin Panel</h2>
+        <form id="storyForm">
+            <input type="hidden" id="editId">
+            <input type="text" id="category" placeholder="Category (e.g. Family, Horror)" required>
+            <input type="text" id="storyName" placeholder="Story Name" required>
+            <input type="url" id="posterUrl" placeholder="Poster Link" required>
+            <div id="episodesContainer"></div>
+            <button type="button" id="addEpisodeBtn" onclick="addEpisodeField()">+ Add Episode</button>
+            <button type="submit">Save Story</button>
+        </form>
+        <div class="story-list" id="storyList"></div>
+        <button id="backToAppBtn" onclick="backToHomeFromAdmin()">Back to App</button>
+    </div>
+
+    <div id="passModal">
+        <h3>Admin Access</h3>
+        <input type="password" id="passInput" placeholder="Enter Password">
+        <button onclick="checkPassword()">Enter</button>
+    </div>
+
+    <script>
+        let currentStory = null;
+        let currentEpiIndex = 0;
+        let stories = [];
+        let isAdminOpen = false;
+        let logoClickCount = 0;
+
+        // --- EXO CLICK VAST CONFIG ---
+        // Apna ExoClick VAST Tag URL yahan paste karein
+        const EXO_VAST_URL = "https://syndication.exoclick.com/spl.php?cat=YOUR_TAG_ID"; 
+
+        document.getElementById('logo').addEventListener('click', () => {
+            logoClickCount++;
+            if (logoClickCount >= 3) {
+                document.getElementById('passModal').style.display = 'block';
+                logoClickCount = 0;
+            }
+        });
+
+        function checkPassword() {
+            if (document.getElementById('passInput').value === '78626') {
+                document.getElementById('passModal').style.display = 'none';
+                document.getElementById('admin').style.display = 'block';
+                isAdminOpen = true;
+                loadStoryList();
+                addEpisodeField();
+            } else {
+                alert('Wrong Password!');
+            }
+            document.getElementById('passInput').value = '';
+        }
+
+        function addEpisodeField() {
+            const container = document.getElementById('episodesContainer');
+            const div = document.createElement('div');
+            div.className = 'episode-fields';
+            div.innerHTML = `
+                <input type="number" placeholder="Ep No." required min="1" style="width:70px;">
+                <input type="url" placeholder="Video Link" required>
+                <button type="button" onclick="this.parentNode.remove()">×</button>
+            `;
+            container.appendChild(div);
+        }
+
+        document.getElementById('storyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const f = window.firebaseFunctions;
+            if (!f) return alert('Firebase not loaded');
+
+            const editId = document.getElementById('editId').value;
+            const category = document.getElementById('category').value.trim();
+            const storyName = document.getElementById('storyName').value.trim();
+            const posterUrl = document.getElementById('posterUrl').value.trim();
+
+            const episodes = Array.from(document.querySelectorAll('.episode-fields')).map(field => {
+                const num = field.querySelector('input[type="number"]').value;
+                const link = field.querySelector('input[type="url"]').value;
+                return num && link ? { num: parseInt(num), link } : null;
+            }).filter(Boolean).sort((a,b)=>a.num-b.num);
+
+            if (!category || !storyName || !posterUrl || episodes.length === 0) {
+                return alert('All fields required + at least 1 episode');
+            }
+
+            const data = { category, name: storyName, poster: posterUrl, episodes };
+
+            try {
+                if (editId) {
+                    await f.updateDoc(f.doc(window.db, 'stories', editId), data);
+                    alert('Updated!');
+                } else {
+                    await f.addDoc(f.collection(window.db, 'stories'), data);
+                    alert('Added!');
+                }
+                document.getElementById('storyForm').reset();
+                document.getElementById('episodesContainer').innerHTML = '';
+                loadStoryList();
+                loadStories();
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        });
+
+        async function loadStoryList() {
+            const f = window.firebaseFunctions;
+            if (!f?.getDocs) return;
+
+            try {
+                const snap = await f.getDocs(f.collection(window.db, 'stories'));
+                const list = document.getElementById('storyList');
+                list.innerHTML = '';
+                snap.forEach(ds => {
+                    const d = ds.data();
+                    d.id = ds.id;
+                    const item = document.createElement('div');
+                    item.className = 'story-item';
+                    item.innerHTML = `
+                        <strong>${d.name}</strong>
+                        <span>(${d.category || 'No Cat'}) - ${d.episodes?.length || 0} eps</span>
+                        <div>
+                            <button onclick="editStory('${d.id}')">Edit</button>
+                            <button onclick="deleteStory('${d.id}')">Delete</button>
+                        </div>
+                    `;
+                    list.appendChild(item);
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function editStory(id) {
+            const f = window.firebaseFunctions;
+            try {
+                const ds = await f.getDoc(f.doc(window.db, 'stories', id));
+                if (ds.exists()) {
+                    const d = ds.data();
+                    document.getElementById('editId').value = id;
+                    document.getElementById('category').value = d.category || '';
+                    document.getElementById('storyName').value = d.name;
+                    document.getElementById('posterUrl').value = d.poster;
+                    document.getElementById('episodesContainer').innerHTML = '';
+                    (d.episodes || []).forEach(ep => {
+                        addEpisodeField();
+                        const fields = document.querySelectorAll('.episode-fields');
+                        const last = fields[fields.length-1];
+                        last.querySelector('input[type="number"]').value = ep.num;
+                        last.querySelector('input[type="url"]').value = ep.link;
+                    });
+                }
+            } catch (err) {
+                alert('Edit error: ' + err.message);
+            }
+        }
+
+        async function deleteStory(id) {
+            if (!confirm('Delete?')) return;
+            const f = window.firebaseFunctions;
+            try {
+                await f.deleteDoc(f.doc(window.db, 'stories', id));
+                loadStoryList();
+                loadStories();
+            } catch (err) {
+                alert('Delete error: ' + err.message);
+            }
+        }
+
+        async function loadStories() {
+            const f = window.firebaseFunctions;
+            if (!f?.getDocs) return;
+
+            try {
+                const snap = await f.getDocs(f.collection(window.db, 'stories'));
+                stories = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderStories();
+            } catch (err) {
+                console.error('Load error:', err);
+            }
+        }
+
+        function renderStories() {
+            const container = document.getElementById('stories');
+            container.innerHTML = '';
+
+            if (stories.length === 0) {
+                container.innerHTML = '<p style="text-align:center; padding:80px 20px;">No stories yet. Add from admin.</p>';
+                return;
+            }
+
+            const grouped = {};
+            stories.forEach(s => {
+                const cat = s.category || 'Uncategorized';
+                grouped[cat] = grouped[cat] || [];
+                grouped[cat].push(s);
+            });
+
+            Object.entries(grouped).forEach(([cat, list]) => {
+                const sec = document.createElement('div');
+                sec.className = 'category-section';
+
+                const title = document.createElement('div');
+                title.className = 'category-title';
+                title.textContent = cat;
+                sec.appendChild(title);
+
+                const grid = document.createElement('div');
+                grid.className = 'stories-grid';
+
+                list.forEach(story => {
+                    const poster = document.createElement('div');
+                    poster.className = 'story-poster';
+                    poster.addEventListener('click', () => openPlayer(story));
+
+                    const img = document.createElement('img');
+                    img.src = story.poster;
+                    img.alt = story.name;
+
+                    const load = document.createElement('div');
+                    load.className = 'loading';
+                    poster.appendChild(load);
+
+                    img.onload = () => load.remove();
+                    img.onerror = () => {
+                        load.remove();
+                        const fb = document.createElement('div');
+                        fb.className = 'fallback';
+                        fb.textContent = story.name + '\n(Image failed)';
+                        poster.appendChild(fb);
+                    };
+
+                    poster.appendChild(img);
+
+                    const name = document.createElement('div');
+                    name.className = 'story-name';
+                    name.textContent = story.name;
+                    poster.appendChild(name);
+
+                    grid.appendChild(poster);
+                });
+
+                sec.appendChild(grid);
+                container.appendChild(sec);
+            });
+        }
+
+        function openPlayer(story) {
+            if (!story.episodes?.length) return alert('No episodes!');
+            currentStory = story;
+            currentEpiIndex = 0;
+            document.getElementById('stories').style.display = 'none';
+            document.getElementById('header').style.display = 'none';
+            document.getElementById('player').style.display = 'block';
+            loadEpisode(0);
+        }
+
+        function loadEpisode(idx) {
+            if (idx < 0 || idx >= currentStory.episodes.length) return;
+            currentEpiIndex = idx;
+            const ep = currentStory.episodes[idx];
+            const v = document.getElementById('video');
+            v.src = ep.link;
+            v.play().catch(e => console.log(e));
+            updateEpisodeList();
+            
+            // Ad Logic: Every 3rd episode
+            if ((idx + 1) % 3 === 0) {
+                showAd();
+            }
+        }
+
+        // ExoClick Integrated Functions
+        function showAd() {
+            const adPlaceholder = document.getElementById('adPlaceholder');
+            const adIframe = document.getElementById('adIframe');
+            const video = document.getElementById('video');
+
+            video.pause();
+            adIframe.src = EXO_VAST_URL; // Setting ExoClick URL
+            adPlaceholder.style.display = 'block';
+        }
+
+        function closeAd() {
+            const adPlaceholder = document.getElementById('adPlaceholder');
+            const adIframe = document.getElementById('adIframe');
+            const video = document.getElementById('video');
+
+            adPlaceholder.style.display = 'none';
+            adIframe.src = ""; // Clear iframe to stop ad
+            video.play();
+        }
+
+        function updateEpisodeList() {
+            const list = document.getElementById('episodeList');
+            list.innerHTML = '';
+            currentStory.episodes.forEach((ep, i) => {
+                const item = document.createElement('div');
+                item.className = 'episode-item';
+                item.textContent = `Epi ${ep.num}`;
+                item.onclick = () => loadEpisode(i);
+                list.appendChild(item);
+            });
+        }
+
+        function toggleEpisodes() {
+            const el = document.getElementById('episodeList');
+            el.style.display = el.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function backToHome() {
+            document.getElementById('player').style.display = 'none';
+            document.getElementById('episodeList').style.display = 'none';
+            document.getElementById('header').style.display = 'flex';
+            document.getElementById('stories').style.display = 'block';
+            document.getElementById('video').pause();
+            document.getElementById('video').src = '';
+            if (!isAdminOpen) renderStories();
+        }
+
+        function backToHomeFromAdmin() {
+            document.getElementById('admin').style.display = 'none';
+            isAdminOpen = false;
+            renderStories();
+        }
+
+        // Events
+        document.getElementById('toggleEpisodes').onclick = toggleEpisodes;
+        document.getElementById('backHome').onclick = backToHome;
+        document.getElementById('closeAd').onclick = closeAd;
+        document.getElementById('video').onended = () => loadEpisode(currentEpiIndex + 1);
+
+        // Init
+        window.addEventListener('load', () => {
+            setTimeout(loadStories, 800);
+        });
+    </script>
+</body>
+</html>
             color: #fff;
             font-family: Arial, sans-serif;
             overflow: hidden;
