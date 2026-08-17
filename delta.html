@@ -1,213 +1,742 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-
-    <script src="https://quge5.com/88/tag.min.js" data-zone="228100" async data-cfasync="false"></script>
-    
-    <meta name="7searchppc" content="c583915e74159fcfb51b498e9364ba93"/>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kahani Play</title>
-    <meta name="exoclick-site-verification" content="7aa7e1dc78a1bcabbd7faaca667b4e46">
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-analytics.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
-        const firebaseConfig = {
-            apiKey: "AIzaSyCnCCWVcNhFBTCh7Tu9ctQ7QiGasUvgw4s",
-            authDomain: "kuku-1cb36.firebaseapp.com",
-            projectId: "kuku-1cb36",
-            storageBucket: "kuku-1cb36.firebasestorage.app",
-            messagingSenderId: "1089968385102",
-            appId: "1:1089968385102:web:bf53c0b9b05c5659e3671f",
-            measurementId: "G-FPTKTH9QXT"
-        };
-        const app = initializeApp(firebaseConfig);
-        getAnalytics(app);
-        const db = getFirestore(app);
-        window.db = db;
-        window.firebaseFunctions = { collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc };
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Short Drama Explore & Search Feed</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        body { margin: 0; padding: 0; background: #000; color: #fff; font-family: Arial, sans-serif; overflow: hidden; }
-        #header { position: fixed; top: 0; left: 0; width: 100%; height: 50px; background: #111; display: flex; align-items: center; padding: 0 15px; z-index: 1000; box-sizing: border-box; }
-        #logo { width: 36px; height: 36px; cursor: pointer; background: #444; border-radius: 50%; }
-        #stories { padding: 70px 15px 20px; height: calc(100vh - 50px); overflow-y: auto; }
-        .category-section { margin-bottom: 25px; }
-        .category-title { font-size: 17px; font-weight: bold; margin: 15px 0 8px; padding-left: 8px; border-left: 4px solid #ff6b6b; }
-        .stories-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
-        .story-poster { width: 100%; aspect-ratio: 3/4; border-radius: 8px; position: relative; background: #222; overflow: hidden; cursor: pointer; }
-        .story-poster img { width: 100%; height: 100%; object-fit: cover; }
-        .story-name { position: absolute; bottom: 6px; left: 6px; background: rgba(0,0,0,0.7); padding: 4px 8px; border-radius: 4px; font-size: 11px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #0d0f12; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding-bottom: 30px; user-select: none; }
+
+        .app-bar { position: sticky; top: 0; z-index: 10; background: rgba(22, 25, 32, 0.95); backdrop-filter: blur(8px); padding: 12px 16px; border-bottom: 1px solid #202530; display: flex; align-items: center; justify-content: space-between; }
+        .app-title { font-size: 16px; font-weight: 800; color: #00e676; letter-spacing: 0.5px; }
+
+        .language-bar { display: flex; gap: 8px; padding: 10px 12px; overflow-x: auto; scrollbar-width: none; background: #0d0f12; position: sticky; top: 45px; z-index: 9; }
+        .language-bar::-webkit-scrollbar { display: none; }
+        .lang-btn { background: #161920; border: 1px solid #2d3345; color: #aaa; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s ease; }
+        .lang-btn.active { background: #00e676; color: #000; border-color: #00e676; font-weight: 700; }
+
+        .search-container { padding: 8px 12px 10px 12px; display: flex; gap: 8px; }
+        .search-input { flex: 1; background: #161920; border: 1px solid #2d3345; border-radius: 6px; padding: 8px 12px; color: #fff; font-size: 13px; outline: none; }
+        .search-input:focus { border-color: #00e676; }
+        .search-btn { background: #00e676; color: #000; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; }
+        .clear-btn { background: #222530; color: #aaa; border: 1px solid #2d3345; padding: 8px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; display: none; }
+
+        .main-container { padding: 12px; }
+        .drama-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         
-        /* Player & Ad Overlay */
-        #player { position: fixed; inset: 0; background: #000; display: none; z-index: 2000; }
-        #video { width: 100%; height: 100%; object-fit: contain; }
-        #adPlaceholder { position: absolute; inset: 0; background: #000; display: none; z-index: 2500; }
-        #adIframe { width: 100%; height: 100%; border: none; }
-        #closeAd { position: absolute; top: 60px; right: 20px; background: rgba(255, 0, 0, 0.8); color: #fff; border: none; padding: 10px 20px; cursor: pointer; z-index: 2600; border-radius: 5px; font-weight: bold; }
-        #episodeList { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 180px; background: #1a1a1a; height: 60%; overflow-y: auto; display: none; padding: 15px; box-sizing: border-box; }
-        .episode-item { padding: 8px; cursor: pointer; border-bottom: 1px solid #333; font-size: 13px; }
-        #toggleEpisodes, #backHome { position: absolute; top: 15px; background: #333; color: #fff; border: none; padding: 8px 12px; cursor: pointer; z-index: 10; border-radius: 4px; }
-        #toggleEpisodes { right: 15px; }
-        #backHome { left: 15px; }
-        #admin { position: fixed; inset: 0; background: #111; display: none; z-index: 1500; padding: 12px; overflow-y: auto; box-sizing: border-box; }
-        #storyForm { display: flex; flex-direction: column; gap: 8px; }
-        #storyForm input { background: #222; color: #fff; padding: 9px; border: none; border-radius: 6px; }
-        #storyForm button { background: #0066cc; color: #fff; padding: 10px; border: none; border-radius: 6px; cursor: pointer; }
-        #passModal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #222; padding: 20px; border-radius: 10px; display: none; z-index: 1600; text-align: center; }
-        .loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 3px solid #333; border-top: 3px solid #fff; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+        .drama-card { background: #161920; border-radius: 8px; overflow: hidden; cursor: pointer; transition: transform 0.15s ease; position: relative; }
+        .drama-card:active { transform: scale(0.96); }
+
+        .poster-box { position: relative; width: 100%; padding-top: 133.33%; background: #20242f; }
+        .poster-box img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+        
+        .badge-views { position: absolute; top: 6px; left: 6px; background: rgba(0, 0, 0, 0.75); color: #00e676; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; backdrop-filter: blur(2px); }
+        .badge-episodes { position: absolute; bottom: 6px; right: 6px; background: rgba(0, 0, 0, 0.75); color: #fff; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; backdrop-filter: blur(2px); }
+        
+        .info-box { padding: 8px; }
+        .title { font-size: 12px; font-weight: 600; color: #f1f5f9; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; }
+
+        .scroll-loader { text-align: center; padding: 20px; font-size: 13px; color: #00e676; font-weight: 500; }
+
+        /* Fullscreen Player Styles */
+        .player-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 100; display: none; flex-direction: column; overflow: hidden; }
+        
+        .player-header { position: absolute; top: 0; left: 0; width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent); z-index: 20; }
+        .back-btn { background: rgba(34, 37, 48, 0.8); color: #00e676; border: none; padding: 6px 12px; border-radius: 20px; font-weight: bold; cursor: pointer; backdrop-filter: blur(4px); font-size: 13px; }
+        .player-title { font-size: 14px; font-weight: 600; color: #fff; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 45%; text-shadow: 0 1px 3px rgba(0,0,0,0.8); text-align: center; }
+        
+        .header-actions { display: flex; gap: 8px; align-items: center; }
+        .ep-btn, .quality-btn {
+            background: rgba(34, 37, 48, 0.85);
+            color: #00e676;
+            border: 1px solid #00e676;
+            padding: 5px 9px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+        }
+        .quality-btn option { background: #161920; color: #fff; }
+
+        .video-container { width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; position: relative; }
+        video { width: 100%; height: 100%; object-fit: contain; background: #000; }
+
+        /* Bottom Drawer for Episode Selection */
+        .ep-drawer {
+            position: absolute; bottom: -100%; left: 0; width: 100%; height: 50%; background: rgba(22, 25, 32, 0.95);
+            backdrop-filter: blur(10px); border-top: 1px solid #202530; z-index: 30; transition: bottom 0.3s ease;
+            display: flex; flex-direction: column; padding: 16px; border-top-left-radius: 16px; border-top-right-radius: 16px;
+        }
+        .ep-drawer.open { bottom: 0; }
+        .ep-drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #2d3345; }
+        .ep-drawer-title { font-size: 14px; font-weight: 700; color: #00e676; }
+        .ep-close-btn { background: none; border: none; color: #aaa; font-size: 18px; cursor: pointer; }
+        .ep-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; overflow-y: auto; padding-right: 4px; }
+        .ep-grid-item { background: #161920; border: 1px solid #2d3345; border-radius: 6px; padding: 10px 0; text-align: center; color: #fff; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .ep-grid-item.active { background: #00e676; color: #000; border-color: #00e676; }
     </style>
 </head>
 <body>
-    <div id="header"><div id="logo"></div></div>
-    <div id="stories"></div>
-    <div id="player">
-        <video id="video" controls></video>
-        <div id="episodeList"></div>
-        <button id="toggleEpisodes">📺 Episodes</button>
-        <button id="backHome">← Back</button>
+
+    <div class="app-bar">
+        <div class="app-title">STORY TV</div>
+    </div>
+
+    <div class="language-bar">
+        <button class="lang-btn active" onclick="selectLanguage('', this)">All</button>
+        <button class="lang-btn" onclick="selectLanguage('2', this)">Hindi</button>
+        <button class="lang-btn" onclick="selectLanguage('6', this)">Telugu</button>
+        <button class="lang-btn" onclick="selectLanguage('7', this)">Tamil</button>
+        <button class="lang-btn" onclick="selectLanguage('8', this)">Kannada</button>
+        <button class="lang-btn" onclick="selectLanguage('9', this)">Malayalam</button>
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search shows..." onkeyup="handleKeyPress(event)">
+        <button class="search-btn" onclick="executeSearch()">Search</button>
+        <button id="clearSearchBtn" class="clear-btn" onclick="resetSearch()">✕ Clear</button>
+    </div>
+
+    <div class="main-container">
+        <div id="dramaContainer" class="drama-grid"></div>
+        <div id="scrollSentinel" class="scroll-loader">Loading page 0...</div>
+    </div>
+
+    <!-- Video Player Modal -->
+    <div id="playerModal" class="player-modal">
+        <div class="player-header">
+            <button class="back-btn" onclick="closePlayer()">← Back</button>
+            <div id="activeShowTitle" class="player-title">Playing</div>
+            <div class="header-actions">
+                <button class="ep-btn" onclick="toggleEpDrawer()">Episodes</button>
+                <select id="qualitySelect" class="quality-btn" onchange="changeQuality(this.value)">
+                    <option value="-1">Auto Quality</option>
+                </select>
+            </div>
+        </div>
         
-        <div id="adPlaceholder">
-            <button id="closeAd">Skip Ad</button>
-            <iframe id="adIframe" src=""></iframe>
+        <div class="video-container" id="videoWrapper">
+            <video id="videoPlayer" controls autoplay playsinline></video>
+        </div>
+
+        <!-- Episode Selector Drawer -->
+        <div id="epDrawer" class="ep-drawer">
+            <div class="ep-drawer-header">
+                <div class="ep-drawer-title" id="epDrawerTitle">Select Episode</div>
+                <button class="ep-close-btn" onclick="toggleEpDrawer()">✕</button>
+            </div>
+            <div class="ep-grid" id="epGrid"></div>
         </div>
     </div>
-    <div id="admin">
-        <h2>Admin Panel</h2>
-        <form id="storyForm">
-            <input type="hidden" id="editId">
-            <input type="text" id="category" placeholder="Category" required>
-            <input type="text" id="storyName" placeholder="Story Name" required>
-            <input type="url" id="posterUrl" placeholder="Poster Link" required>
-            <div id="episodesContainer"></div>
-            <button type="button" onclick="addEpisodeField()">+ Add Episode</button>
-            <button type="submit" style="margin-top:10px;">Save Story</button>
-        </form>
-        <div id="storyList" style="margin-top:20px;"></div>
-        <button onclick="backToHomeFromAdmin()" style="width:100%; margin-top:20px; padding:10px;">Back to App</button>
-    </div>
-    <div id="passModal">
-        <h3>Admin Access</h3>
-        <input type="password" id="passInput" placeholder="Password">
-        <button onclick="checkPassword()">Enter</button>
-    </div>
+
     <script>
-        let currentStory = null;
-        let currentEpiIndex = 0;
-        let stories = [];
-        let logoClickCount = 0;
-        // STEP 2: ExoClick Ad URL (Jab site verify ho jaye, tab yahan apna link dalein)
-        const EXO_VAST_URL = ""; 
-        document.getElementById('logo').addEventListener('click', () => {
-            logoClickCount++;
-            if (logoClickCount >= 3) {
-                document.getElementById('passModal').style.display = 'block';
-                logoClickCount = 0;
-            }
-        });
-        function checkPassword() {
-            if (document.getElementById('passInput').value === '78626') {
-                document.getElementById('passModal').style.display = 'none';
-                document.getElementById('admin').style.display = 'block';
-                loadStoryList();
-            } else { alert('Wrong Password!'); }
+        const WORKER_URL = 'https://long-dream-ac6b.aaa39269012.workers.dev/';
+        const BASE_API = 'https://storytvulimate.ixadrama.in/feedservice/v2/explore/shows';
+        const SEARCH_API = 'https://storytvulimate.ixadrama.in/searchservice/v1/search/';
+        const EPISODE_API = 'https://storytvulimate.ixadrama.in/feedservice/v1/episode/metadata/';
+        
+        let currentPage = 0;
+        let isLoading = false;
+        let hasMore = true;
+        let isSearchActive = false;
+        let searchPage = 0;
+        let currentSearchQuery = '';
+        let currentLangId = '';
+        let hlsPlayer = null;
+
+        let currentShowId = null;
+        let currentCursor = 0;
+        let episodeList = [];
+        let currentEpisodeIndex = 0;
+        let isFetchingEpisodes = false;
+        let hasMoreEpisodes = true;
+        let totalEpisodesCount = 0;
+
+        let touchStartY = 0;
+        let touchEndY = 0;
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') executeSearch();
         }
-        function addEpisodeField() {
-            const container = document.getElementById('episodesContainer');
-            const div = document.createElement('div');
-            div.style.display = "flex";
-            div.style.gap = "5px";
-            div.style.marginTop = "5px";
-            div.innerHTML = `<input type="number" placeholder="Ep" required style="width:50px;"><input type="url" placeholder="Video Link" required style="flex:1;"><button type="button" onclick="this.parentNode.remove()">×</button>`;
-            container.appendChild(div);
-        }
-        document.getElementById('storyForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const f = window.firebaseFunctions;
-            const episodes = Array.from(document.querySelectorAll('#episodesContainer div')).map(row => ({
-                num: parseInt(row.querySelectorAll('input')[0].value),
-                link: row.querySelectorAll('input')[1].value
-            })).sort((a,b) => a.num - b.num);
-            const data = {
-                category: document.getElementById('category').value,
-                name: document.getElementById('storyName').value,
-                poster: document.getElementById('posterUrl').value,
-                episodes: episodes
-            };
-            const editId = document.getElementById('editId').value;
-            if(editId) await f.updateDoc(f.doc(window.db, 'stories', editId), data);
-            else await f.addDoc(f.collection(window.db, 'stories'), data);
+
+        function selectLanguage(langId, element) {
+            currentLangId = langId;
+            currentPage = 0;
+            hasMore = true;
+            isSearchActive = false;
+            isLoading = false;
             
-            alert("Story Saved!");
-            location.reload();
-        });
-        async function loadStories() {
-            const f = window.firebaseFunctions;
-            if(!f) return;
-            const snap = await f.getDocs(f.collection(window.db, 'stories'));
-            stories = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            renderStories();
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+
+            document.getElementById('searchInput').value = '';
+            document.getElementById('clearSearchBtn').style.display = 'none';
+            document.getElementById('dramaContainer').innerHTML = '';
+            
+            fetchNextPage();
         }
-        function renderStories() {
-            const container = document.getElementById('stories');
-            container.innerHTML = '';
-            stories.forEach(s => {
-                const div = document.createElement('div');
-                div.className = 'story-poster';
-                div.onclick = () => openPlayer(s);
-                div.innerHTML = `<img src="${s.poster}"><div class="story-name">${s.name}</div>`;
-                container.appendChild(div);
+
+        async function executeSearch(isNewSearch = true) {
+            if (isNewSearch) {
+                const query = document.getElementById('searchInput').value.trim();
+                if (!query) return;
+                currentSearchQuery = query;
+                searchPage = 0;
+                isSearchActive = true;
+                document.getElementById('clearSearchBtn').style.display = 'inline-block';
+                document.getElementById('dramaContainer').innerHTML = '';
+            }
+
+            if (isLoading) return;
+            isLoading = true;
+            
+            const sentinel = document.getElementById('scrollSentinel');
+            sentinel.textContent = `Searching for "${currentSearchQuery}"...`;
+
+            const encodedQuery = encodeURIComponent(currentSearchQuery);
+            const targetUrl = `${SEARCH_API}${encodedQuery}?page=${searchPage}&size=20`;
+
+            try {
+                const res = await fetch(`${WORKER_URL}?url=${encodeURIComponent(targetUrl)}`);
+                const responseData = await res.json();
+
+                let showsList = extractListFromResponse(responseData);
+
+                if (!showsList || showsList.length === 0) {
+                    if (searchPage === 0) {
+                        sentinel.textContent = 'No shows found.';
+                    } else {
+                        sentinel.textContent = 'End of results.';
+                        hasMore = false;
+                    }
+                    return;
+                }
+
+                renderCards(showsList);
+                searchPage++;
+                sentinel.textContent = 'Scroll for more results...';
+
+            } catch (err) {
+                sentinel.textContent = 'Search Error: ' + err.message;
+            } finally {
+                isLoading = false;
+            }
+        }
+
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('clearSearchBtn').style.display = 'none';
+            document.getElementById('dramaContainer').innerHTML = '';
+            
+            isSearchActive = false;
+            currentSearchQuery = '';
+            searchPage = 0;
+            currentPage = 0;
+            hasMore = true;
+            fetchNextPage();
+        }
+
+        async function fetchNextPage() {
+            if (isLoading || !hasMore) return;
+            
+            if (isSearchActive) {
+                executeSearch(false);
+                return;
+            }
+
+            isLoading = true;
+            const sentinel = document.getElementById('scrollSentinel');
+            sentinel.textContent = `Loading page ${currentPage}...`;
+
+            let targetUrl = `${BASE_API}?page=${currentPage}&size=10&intCount=0`;
+            if (currentLangId && currentLangId !== '') {
+                targetUrl += `&langId=${currentLangId}`;
+            }
+
+            try {
+                const res = await fetch(`${WORKER_URL}?url=${encodeURIComponent(targetUrl)}`);
+                const responseData = await res.json();
+
+                let showsList = extractListFromResponse(responseData);
+
+                if (!showsList || showsList.length === 0) {
+                    hasMore = false;
+                    sentinel.textContent = 'End of list';
+                    return;
+                }
+
+                renderCards(showsList);
+                currentPage++;
+                sentinel.textContent = 'Scroll for more...';
+
+            } catch (err) {
+                sentinel.textContent = 'Error: ' + err.message;
+            } finally {
+                isLoading = false;
+            }
+        }
+
+        function extractListFromResponse(responseData) {
+            if (Array.isArray(responseData)) return responseData;
+            if (Array.isArray(responseData?.data?.content)) return responseData.data.content;
+            if (Array.isArray(responseData?.data?.shows)) return responseData.data.shows;
+            if (Array.isArray(responseData?.data?.list)) return responseData.data.list;
+            if (Array.isArray(responseData?.data?.searchList)) return responseData.data.searchList;
+            if (Array.isArray(responseData?.data?.resultList)) return responseData.data.resultList;
+            if (Array.isArray(responseData?.data)) return responseData.data;
+            if (Array.isArray(responseData?.content)) return responseData.content;
+            if (Array.isArray(responseData?.results)) return responseData.results;
+            return [];
+        }
+
+        function cleanTitle(rawTitle) {
+            if (!rawTitle) return 'Drama Show';
+            return rawTitle.replace(/ultimate/gi, '').trim();
+        }
+
+        function extractShowInfo(item) {
+            let id = '';
+            let title = '';
+            let imageUrl = '';
+            let totalEp = 0;
+
+            const ignoreKeys = ['avatar', 'icon', 'user', 'profile', 'headimg', 'author', 'logo'];
+
+            function scan(obj) {
+                if (!obj || typeof obj !== 'object') return;
+
+                for (let key in obj) {
+                    const val = obj[key];
+                    if (val === null || val === undefined) continue;
+
+                    const k = key.toLowerCase();
+
+                    if (!id && (k === 'id' || k === 'showid' || k === 'bookid' || k === 'targetid' || k === 'dramaid' || k === 'comicid')) {
+                        if (typeof val === 'number' || (typeof val === 'string' && val.length > 0)) {
+                            id = String(val);
+                        }
+                    }
+
+                    if (!title && typeof val === 'string' && !val.startsWith('http')) {
+                        if (k.includes('title') || k.includes('name') || k.includes('book') || k.includes('show')) {
+                            title = val;
+                        }
+                    }
+
+                    if (typeof val === 'number' && val > 0 && (
+                        k.includes('episodes') || k.includes('episodecount') || k.includes('totalepisode') || 
+                        k.includes('totalep') || k.includes('epcount') || k.includes('chapter') || 
+                        k.includes('total') || k.includes('count') || k.includes('seriescount')
+                    )) {
+                        if (!totalEp || k.includes('episode') || k.includes('ep')) {
+                            totalEp = val;
+                        }
+                    }
+
+                    if (typeof val === 'object') scan(val);
+                }
+            }
+
+            scan(item);
+
+            function findPoster(obj) {
+                if (!obj || typeof obj !== 'object') return '';
+                let found = '';
+                function scanPoster(o) {
+                    if (!o || typeof o !== 'object' || found) return;
+                    for (let k in o) {
+                        const lowKey = k.toLowerCase();
+                        if (ignoreKeys.some(ign => lowKey.includes(ign))) continue;
+                        let val = o[k];
+                        if (typeof val === 'string' && val.startsWith('http')) {
+                            if (val.toLowerCase().includes('.webp') || lowKey.includes('cover') || lowKey.includes('poster')) {
+                                found = val;
+                                return;
+                            }
+                        } else if (typeof val === 'object' && val !== null) {
+                            scanPoster(val);
+                        }
+                    }
+                }
+                scanPoster(obj);
+                return found;
+            }
+
+            imageUrl = findPoster(item);
+            if (!title) title = item.title || item.name || item.showName || 'Drama Show';
+            title = cleanTitle(title);
+
+            return { id, title, imageUrl, totalEp };
+        }
+
+        function renderCards(showsList) {
+            const container = document.getElementById('dramaContainer');
+
+            showsList.forEach(rawItem => {
+                const info = extractShowInfo(rawItem);
+
+                const card = document.createElement('div');
+                card.className = 'drama-card';
+
+                const epText = info.totalEp ? `EP ${info.totalEp}` : 'EP';
+
+                card.innerHTML = `
+                    <div class="poster-box">
+                        <img src="${info.imageUrl}" alt="${info.title}" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='https://via.placeholder.com/300x400/1e2330/ffffff?text=Poster';">
+                        <span class="badge-views">👁️ 8M</span>
+                        <span class="badge-episodes">${epText}</span>
+                    </div>
+                    <div class="info-box">
+                        <div class="title">${info.title}</div>
+                    </div>
+                `;
+
+                card.onclick = () => openPlayer(info.id, info.title, info.totalEp);
+                container.appendChild(card);
             });
         }
-        function openPlayer(story) {
-            currentStory = story;
-            document.getElementById('stories').style.display = 'none';
-            document.getElementById('header').style.display = 'none';
-            document.getElementById('player').style.display = 'block';
-            loadEpisode(0);
-        }
-        function loadEpisode(idx) {
-            if (idx >= currentStory.episodes.length) return;
-            currentEpiIndex = idx;
-            const video = document.getElementById('video');
-            video.src = currentStory.episodes[idx].link;
-            
-            // AbortError Fix: Ensuring playback starts safely
-            let playPromise = video.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(() => console.log("Playback interrupted safely."));
+
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && !isLoading && hasMore) {
+                fetchNextPage();
             }
-            // Ad trigger logic: Every 3rd episode
-            if ((idx + 1) % 3 === 0 && EXO_VAST_URL !== "") showAd();
+        }, { rootMargin: '200px' });
+
+        observer.observe(document.getElementById('scrollSentinel'));
+
+        async function openPlayer(showId, title, totalEpisodes) {
+            document.getElementById('activeShowTitle').textContent = title;
+            document.getElementById('playerModal').style.display = 'flex';
+            
+            currentShowId = showId;
+            currentCursor = 0;
+            episodeList = [];
+            currentEpisodeIndex = 0;
+            hasMoreEpisodes = true;
+            totalEpisodesCount = totalEpisodes || 0;
+
+            const video = document.getElementById('videoPlayer');
+            video.onended = playNextEpisode;
+
+            await fetchEpisodes();
+            setupSwipeGesture();
         }
-        function showAd() {
-            document.getElementById('video').pause();
-            document.getElementById('adIframe').src = EXO_VAST_URL;
-            document.getElementById('adPlaceholder').style.display = 'block';
+
+        async function fetchEpisodes() {
+            if (isFetchingEpisodes || (!hasMoreEpisodes && currentCursor > 0)) return;
+            if (!currentShowId) return;
+
+            isFetchingEpisodes = true;
+            const targetUrl = `${EPISODE_API}${currentShowId}?cursor=${currentCursor}&dir=NEXT`;
+
+            try {
+                const res = await fetch(`${WORKER_URL}?url=${encodeURIComponent(targetUrl)}`);
+                const responseData = await res.json();
+
+                let fetchedEps = extractEpisodesFromResponse(responseData);
+
+                if (fetchedEps && fetchedEps.length > 0) {
+                    fetchedEps.forEach(ep => {
+                        if (!episodeList.some(e => e.videoUrl === ep.videoUrl && e.epNumber === ep.epNumber)) {
+                            episodeList.push(ep);
+                        }
+                    });
+
+                    if (currentCursor === 0 && episodeList.length > 0) {
+                        selectAndPlayEpisode(0);
+                    }
+
+                    currentCursor += fetchedEps.length;
+                    renderEpDrawerItems();
+
+                    if (fetchedEps.length < 5) {
+                        hasMoreEpisodes = false;
+                    }
+                } else {
+                    hasMoreEpisodes = false;
+                }
+
+            } catch (err) {
+                console.error("Episode Fetch Error:", err);
+            } finally {
+                isFetchingEpisodes = false;
+            }
         }
-        function closeAd() {
-            document.getElementById('adPlaceholder').style.display = 'none';
-            document.getElementById('adIframe').src = "";
-            document.getElementById('video').play();
+
+        function extractEpisodesFromResponse(responseData) {
+            let rawList = extractListFromResponse(responseData);
+            let episodes = [];
+
+            function scanForVideo(obj) {
+                if (!obj || typeof obj !== 'object') return null;
+                let foundUrl = '';
+                let foundEpNo = 0;
+
+                for (let key in obj) {
+                    const val = obj[key];
+                    const k = key.toLowerCase();
+                    if (!foundUrl && typeof val === 'string' && val.startsWith('http') && (val.includes('.m3u8') || val.includes('.mp4') || k.includes('url') || k.includes('play'))) {
+                        foundUrl = val;
+                    }
+                    if (!foundEpNo && typeof val === 'number' && (k.includes('episode') || k.includes('index') || k.includes('num'))) {
+                        foundEpNo = val;
+                    }
+                }
+                return foundUrl ? { videoUrl: foundUrl, epNumber: foundEpNo } : null;
+            }
+
+            rawList.forEach((item, idx) => {
+                if (typeof item === 'string' && item.startsWith('http')) {
+                    episodes.push({ videoUrl: item, epNumber: idx + 1 });
+                } else if (typeof item === 'object') {
+                    const extracted = scanForVideo(item);
+                    if (extracted) {
+                        episodes.push({
+                            videoUrl: extracted.videoUrl,
+                            epNumber: extracted.epNumber || (idx + 1)
+                        });
+                    }
+                }
+            });
+
+            return episodes;
         }
-        document.getElementById('toggleEpisodes').onclick = () => {
-            const el = document.getElementById('episodeList');
-            el.style.display = el.style.display === 'none' ? 'block' : 'none';
-            el.innerHTML = currentStory.episodes.map((e, i) => `<div class="episode-item" onclick="loadEpisode(${i})">Episode ${e.num}</div>`).join('');
-        };
-        document.getElementById('backHome').onclick = () => {
-            document.getElementById('player').style.display = 'none';
-            document.getElementById('header').style.display = 'flex';
-            document.getElementById('stories').style.display = 'block';
-            document.getElementById('video').pause();
-        };
-        document.getElementById('closeAd').onclick = closeAd;
-        document.getElementById('video').onended = () => loadEpisode(currentEpiIndex + 1);
-        
-        function backToHomeFromAdmin() { document.getElementById('admin').style.display = 'none'; }
-        window.onload = () => setTimeout(loadStories, 1000);
+
+        function selectAndPlayEpisode(index) {
+            if (index < 0 || index >= episodeList.length) return;
+            
+            currentEpisodeIndex = index;
+            const targetEp = episodeList[index];
+
+            playVideo(targetEp.videoUrl);
+            renderEpDrawerItems();
+
+            if (index >= episodeList.length - 2 && hasMoreEpisodes) {
+                fetchEpisodes();
+            }
+        }
+
+        function toggleEpDrawer() {
+            const drawer = document.getElementById('epDrawer');
+            drawer.classList.toggle('open');
+        }
+
+        function renderEpDrawerItems() {
+            const epGrid = document.getElementById('epGrid');
+            if (!epGrid) return;
+
+            epGrid.innerHTML = '';
+            episodeList.forEach((ep, idx) => {
+                const item = document.createElement('div');
+                item.className = `ep-grid-item ${idx === currentEpisodeIndex ? 'active' : ''}`;
+                item.textContent = ep.epNumber || (idx + 1);
+                item.onclick = () => {
+                    selectAndPlayEpisode(idx);
+                    toggleEpDrawer();
+                };
+                epGrid.appendChild(item);
+            });
+        }
+
+        function setupSwipeGesture() {
+            const wrapper = document.getElementById('videoWrapper');
+
+            wrapper.ontouchstart = (e) => {
+                touchStartY = e.touches[0].clientY;
+            };
+
+            wrapper.ontouchend = (e) => {
+                touchEndY = e.changedTouches[0].clientY;
+                handleSwipe();
+            };
+
+            wrapper.onwheel = (e) => {
+                if (e.deltaY > 50) {
+                    playNextEpisode();
+                } else if (e.deltaY < -50) {
+                    playPrevEpisode();
+                }
+            };
+        }
+
+        function handleSwipe() {
+            const distance = touchStartY - touchEndY;
+            const threshold = 50;
+
+            if (distance > threshold) {
+                playNextEpisode();
+            } else if (distance < -threshold) {
+                playPrevEpisode();
+            }
+        }
+
+        function playNextEpisode() {
+            if (currentEpisodeIndex < episodeList.length - 1) {
+                selectAndPlayEpisode(currentEpisodeIndex + 1);
+            } else if (hasMoreEpisodes) {
+                fetchEpisodes().then(() => {
+                    if (currentEpisodeIndex < episodeList.length - 1) {
+                        selectAndPlayEpisode(currentEpisodeIndex + 1);
+                    }
+                });
+            }
+        }
+
+        function playPrevEpisode() {
+            if (currentEpisodeIndex > 0) {
+                selectAndPlayEpisode(currentEpisodeIndex - 1);
+            }
+        }
+
+        function updateQualityOptions() {
+            const selector = document.getElementById('qualitySelect');
+            if (!selector) return;
+
+            selector.innerHTML = '<option value="-1">Auto Quality</option>';
+
+            if (!hlsPlayer || !hlsPlayer.levels || hlsPlayer.levels.length === 0) {
+                return;
+            }
+
+            hlsPlayer.levels.forEach((level, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                
+                let label = level.height ? `${level.height}p` : `Quality ${index + 1}`;
+                if (level.bitrate) {
+                    label += ` (${Math.round(level.bitrate / 1000)}k)`;
+                }
+                
+                option.textContent = label;
+                selector.appendChild(option);
+            });
+
+            if (hlsPlayer.currentLevel !== -1) {
+                selector.value = hlsPlayer.currentLevel;
+            }
+        }
+
+        function changeQuality(levelIndex) {
+            if (!hlsPlayer) return;
+            const parsedIndex = parseInt(levelIndex);
+            
+            hlsPlayer.currentLevel = parsedIndex;
+            hlsPlayer.loadLevel = parsedIndex;
+        }
+
+        function playVideo(rawVideoUrl) {
+            const video = document.getElementById('videoPlayer');
+            const qualitySelector = document.getElementById('qualitySelect');
+            
+            if (qualitySelector) {
+                qualitySelector.value = "-1";
+                qualitySelector.innerHTML = '<option value="-1">Auto Quality</option>';
+            }
+
+            if (!rawVideoUrl) return;
+
+            if (hlsPlayer) {
+                hlsPlayer.destroy();
+                hlsPlayer = null;
+            }
+
+            if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = rawVideoUrl;
+                video.play().catch(e => console.log("Direct play error:", e));
+                if (qualitySelector) qualitySelector.style.display = 'none'; 
+            } else if (Hls.isSupported()) {
+                if (qualitySelector) qualitySelector.style.display = 'block';
+                
+                hlsPlayer = new Hls({
+                    enableWorker: true,
+                    lowLatencyMode: false,
+                    autoLevelEnabled: false
+                });
+
+                hlsPlayer.loadSource(rawVideoUrl);
+                hlsPlayer.attachMedia(video);
+
+                hlsPlayer.on(Hls.Events.MANIFEST_PARSED, () => {
+                    updateQualityOptions();
+
+                    let targetIndex = -1;
+                    let highestQualityIndex = 0;
+                    let maxResolution = 0;
+
+                    hlsPlayer.levels.forEach((level, index) => {
+                        if (level.height === 1080) {
+                            targetIndex = index;
+                        }
+                        if (level.height > maxResolution) {
+                            maxResolution = level.height;
+                            highestQualityIndex = index;
+                        }
+                    });
+
+                    let finalLevelIndex = (targetIndex !== -1) ? targetIndex : highestQualityIndex;
+                    
+                    hlsPlayer.currentLevel = finalLevelIndex;
+                    hlsPlayer.loadLevel = finalLevelIndex;
+
+                    if (qualitySelector) {
+                        qualitySelector.value = finalLevelIndex;
+                    }
+
+                    const tracks = hlsPlayer.audioTracks;
+                    if (tracks && tracks.length > 0) {
+                        let hindiTrackIndex = -1;
+                        tracks.forEach((track, index) => {
+                            const trackLang = (track.lang || track.name || '').toLowerCase();
+                            if (trackLang.includes('hi') || trackLang.includes('hin') || trackLang.includes('hindi')) {
+                                hindiTrackIndex = index;
+                            }
+                        });
+                        if (hindiTrackIndex !== -1) {
+                            hlsPlayer.audioTrack = hindiTrackIndex;
+                        }
+                    }
+                    video.play().catch(e => console.log("Autoplay blocked:", e));
+                });
+
+                hlsPlayer.on(Hls.Events.LEVELS_UPDATED, () => {
+                    updateQualityOptions();
+                });
+
+                hlsPlayer.on(Hls.Events.ERROR, (event, data) => {
+                    if (data.fatal && data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+                        hlsPlayer.destroy();
+                        hlsPlayer = new Hls();
+                        hlsPlayer.loadSource(`${WORKER_URL}?url=${encodeURIComponent(rawVideoUrl)}`);
+                        hlsPlayer.attachMedia(video);
+                        hlsPlayer.on(Hls.Events.MANIFEST_PARSED, () => {
+                            updateQualityOptions();
+                            video.play().catch(e => console.log(e));
+                        });
+                    }
+                });
+
+            } else {
+                video.src = rawVideoUrl;
+                video.play().catch(e => console.log("Direct play error:", e));
+                if (qualitySelector) qualitySelector.style.display = 'none';
+            }
+        }
+
+        function closePlayer() {
+            const video = document.getElementById('videoPlayer');
+            video.pause();
+            video.src = '';
+            if (hlsPlayer) {
+                hlsPlayer.destroy();
+                hlsPlayer = null;
+            }
+            document.getElementById('epDrawer').classList.remove('open');
+            document.getElementById('playerModal').style.display = 'none';
+        }
     </script>
 </body>
 </html>
