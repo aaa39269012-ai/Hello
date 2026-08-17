@@ -78,9 +78,81 @@
         .ep-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; overflow-y: auto; padding-right: 4px; }
         .ep-grid-item { background: #161920; border: 1px solid #2d3345; border-radius: 6px; padding: 10px 0; text-align: center; color: #fff; font-size: 12px; font-weight: 600; cursor: pointer; }
         .ep-grid-item.active { background: #00e676; color: #000; border-color: #00e676; }
+
+        /* Persistent 3D Popup Styles */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(5, 5, 13, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            perspective: 1000px;
+            pointer-events: all;
+        }
+
+        .popup {
+            width: 88%;
+            max-width: 500px;
+            padding: 35px 28px;
+            border-radius: 28px;
+            background: rgba(15, 15, 30, 0.92);
+            border: 1px solid rgba(255,255,255,0.18);
+            box-shadow:
+                0 30px 80px rgba(0,0,0,.65),
+                0 0 50px rgba(100,70,255,.25),
+                inset 0 1px 0 rgba(255,255,255,.12);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            transform-style: preserve-3d;
+            animation: popup 0.8s cubic-bezier(.2,.8,.2,1);
+        }
+
+        @keyframes popup {
+            from {
+                opacity: 0;
+                transform: translateY(80px) rotateX(20deg) scale(.8);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) rotateX(0) scale(1);
+            }
+        }
+
+        .popup .text {
+            color: white;
+            font-size: 22px;
+            line-height: 1.6;
+            text-align: center;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        @media(max-width:500px) {
+            .popup {
+                width: 90%;
+                padding: 30px 22px;
+            }
+            .popup .text {
+                font-size: 19px;
+            }
+        }
     </style>
 </head>
 <body>
+
+    <!-- Persistent 3D Popup -->
+    <div class="popup-overlay" id="persistentPopup">
+        <div class="popup">
+            <div class="text">"Please use the original APK; otherwise, legal action may be taken against you."</div>
+        </div>
+    </div>
 
     <div class="app-bar">
         <div class="app-title">STORY TV</div>
@@ -358,8 +430,7 @@
                                 return;
                             }
                         } else if (typeof val === 'object' && val !== null) {
-                            scanPoster(val);
-                        }
+                                               }
                     }
                 }
                 scanPoster(obj);
